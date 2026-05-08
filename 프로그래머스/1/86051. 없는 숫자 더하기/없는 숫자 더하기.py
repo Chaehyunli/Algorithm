@@ -1,10 +1,5 @@
 def solution(numbers):
-    
-    sum = 0
-    
-    for number in numbers:
-        sum += number
         
-    answer = 45 - sum
+    answer = 45 - sum(numbers)
     
     return answer
