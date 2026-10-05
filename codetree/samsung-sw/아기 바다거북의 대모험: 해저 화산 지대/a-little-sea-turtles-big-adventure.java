@@ -153,6 +153,7 @@ public class Main {
                 if(turtles[t][2] != -1) continue; // 도착했거나 이미 화석
                 if(heat[turtles[t][0]][turtles[t][1]] >= 20){
                     turtles[t][2] = -2;
+                    remainTurtles--;   // 화석이 되면 남아 있는 거북이에서 제외
                 }
             }
 
