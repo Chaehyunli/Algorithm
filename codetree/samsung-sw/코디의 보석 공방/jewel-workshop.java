@@ -22,6 +22,7 @@ public class Main {
     // ==========================================
     public static <T> void printArrayList(List<T> list, String title) {
         System.out.println("=== [DEBUG] " + title + " ===");
+
         if (list == null || list.isEmpty()) {
             System.out.println("(empty)");
         } else {
@@ -29,6 +30,7 @@ public class Main {
                 System.out.println("[" + i + "] " + list.get(i));
             }
         }
+
         System.out.println("==========================");
     }
 
@@ -52,41 +54,62 @@ public class Main {
             switch (task) {
                 case 1: { // (1) 보석 준비
                     int N = sc.nextInt();
+
                     for (int j = 0; j < N; j++) {
                         int w = sc.nextInt();
                         int v = sc.nextInt();
-                        jewelryMap.put(indexCount, new Jewelry(indexCount, w, v));
+
+                        jewelryMap.put(
+                            indexCount,
+                            new Jewelry(indexCount, w, v)
+                        );
+
                         indexCount++;
                     }
+
                     dirty = true;
                     break;
                 }
+
                 case 2: { // (2) 보석 입고
                     int w = sc.nextInt();
                     int v = sc.nextInt();
-                    jewelryMap.put(indexCount, new Jewelry(indexCount, w, v));
+
+                    jewelryMap.put(
+                        indexCount,
+                        new Jewelry(indexCount, w, v)
+                    );
+
                     indexCount++;
                     dirty = true;
                     break;
                 }
+
                 case 3: { // (3) 보석 판매
                     int sellNum = sc.nextInt();
+
                     // 보석이 존재하고, 아직 판매되지 않은 경우
-                    if (jewelryMap.containsKey(sellNum) && !jewelryMap.get(sellNum).sold) {
+                    if (jewelryMap.containsKey(sellNum)
+                            && !jewelryMap.get(sellNum).sold) {
+
                         Jewelry j = jewelryMap.get(sellNum);
                         j.sold = true; // 판매 처리
                         dirty = true;
+
                         System.out.println(j.value);
                     } else {
                         System.out.println(-1);
                     }
+
                     break;
                 }
+
                 case 4: { // (4) 진열 (Knapsack DP)
                     int limitWeight = sc.nextInt();
 
                     // 현재 공방에 남아있는 보석만 수집
                     List<Jewelry> activeList = new ArrayList<>();
+
                     for (Jewelry j : jewelryMap.values()) {
                         if (!j.sold) {
                             activeList.add(j);
@@ -96,30 +119,28 @@ public class Main {
                     // [디버깅] 현재 남아있는 보석 목록 출력 확인
                     // printArrayList(activeList, "Active Jewelry List for Task 4");
 
-                    // dp[w]: 무게 한도 w일 때 얻을 수 있는 최대 가치
-                    int[] dp = new int[limitWeight + 1];
+                    // 1차원 DP 사용 시
+                    // System.out.println(getDp1(activeList, limitWeight));
 
-                    for (Jewelry j : activeList) {
-                        // 중복 선택을 방지하기 위해 역순(limitWeight -> j.weight)으로 갱신
-                        for (int w = limitWeight; w >= j.weight; w--) {
-                            dp[w] = Math.max(dp[w], dp[w - j.weight] + j.value);
-                        }
-                    }
+                    // 2차원 DP 사용 시
+                    System.out.println(getDp2(activeList, limitWeight));
 
-                    System.out.println(dp[limitWeight]);
                     break;
                 }
+
                 case 5: { // (5) 세트 구성 (정렬 + 투 포인터)
                     int maxWeightGap = sc.nextInt();
 
                     // 보석 목록이 바뀐 경우에만 다시 수집하고 정렬
                     if (dirty) {
                         weights.clear();
+
                         for (Jewelry j : jewelryMap.values()) {
                             if (!j.sold) {
                                 weights.add(j.weight);
                             }
                         }
+
                         Collections.sort(weights);
                         dirty = false;
                     }
@@ -135,6 +156,7 @@ public class Main {
                         while (weights.get(right) - weights.get(left) > maxWeightGap) {
                             left++;
                         }
+
                         // right 위치의 보석과 세트를 만들 수 있는 보석의 개수 누적
                         count += (right - left);
                     }
@@ -146,5 +168,51 @@ public class Main {
         }
 
         sc.close();
+    }
+
+    static int getDp1(List<Jewelry> activeList, int limitWeight) {
+        // dp[w]: 무게 한도 w일 때 얻을 수 있는 최대 가치
+        int[] dp = new int[limitWeight + 1];
+
+        for (Jewelry j : activeList) {
+            // 중복 선택을 방지하기 위해 역순(limitWeight -> j.weight)으로 갱신
+            for (int w = limitWeight; w >= j.weight; w--) {
+                dp[w] = Math.max(
+                    dp[w],
+                    dp[w - j.weight] + j.value
+                );
+            }
+        }
+
+        return dp[limitWeight];
+    }
+
+    static int getDp2(List<Jewelry> activeList, int limitWeight) {
+        int size = activeList.size();
+
+        // dp[i][weight]
+        // = 앞에서 i개의 보석만 사용해서
+        //   무게가 weight 이하일 때 얻을 수 있는 최대 가치
+        int[][] dp = new int[size + 1][limitWeight + 1];
+
+        for (int i = 0; i < size; i++) {
+            int weight = activeList.get(i).weight;
+            int value = activeList.get(i).value;
+
+            for (int w = 0; w <= limitWeight; w++) {
+                // i + 1번째 보석을 사용하지 않는 경우
+                dp[i + 1][w] = dp[i][w];
+
+                // i + 1번째 보석을 사용하는 경우
+                if (w >= weight) {
+                    dp[i + 1][w] = Math.max(
+                        dp[i][w],                 // i + 1번째 보석을 안 씀
+                        dp[i][w - weight] + value // i + 1번째 보석을 한 번 사용
+                    );
+                }
+            }
+        }
+
+        return dp[size][limitWeight];
     }
 }
