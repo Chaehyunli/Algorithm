@@ -64,7 +64,8 @@ public class Main {
                     int K4 = sc.nextInt(); // 향도의 합
 
                     // System.out.println(getDp(K4));
-                    sb.append(getDp(K4)).append("\n");
+                    // sb.append(getDp1(K4)).append("\n");
+                    sb.append(getDp2(K4)).append("\n");
 
                     break;
 
@@ -126,7 +127,7 @@ public class Main {
         
     }
 
-    static int getDp(int K){
+    static int getDp1(int K){
         int[] dp = new int[K + 1]; // dp[N] : 향도의 합이 정확히 N이 되는데, 필요한 향로의 최소 개수
 
         Arrays.fill(dp, 1000000000);
@@ -137,6 +138,7 @@ public class Main {
 
             // 하나의 향수를 무한으로 사용 가능하기 때문에 정순으로
             for (int i = p; i <= K; i++) {
+                // 초기에 채워놓은 1000000000이 아닐 때만 진행하기 때문에 정확히 K일 때만 업데이트
                 if (dp[i - p] != 1000000000) {
                     dp[i] = Math.min(dp[i], dp[i - p] + 1);
                 }
@@ -148,5 +150,44 @@ public class Main {
         }
 
         return -1;
+    }
+
+    static int getDp2(int K) {
+        List<Perfume> perfumes = new ArrayList<>(map.values());
+        
+        int size = map.size();
+        int INF = 1000000000;
+
+        // dp[i][sum]
+        // = 앞에서 i개의 향료만 사용해서
+        //   향도의 합을 정확히 sum으로 만드는 최소 향료 개수
+        int[][] dp = new int[size + 1][K + 1];
+
+        // "정확히 sum 만들기"이므로 처음에는 모두 불가능(INF)
+        for (int i = 0; i <= size; i++) {
+            Arrays.fill(dp[i], INF);
+        }
+
+        // 향료를 하나도 사용하지 않고 합 0을 만드는 방법은 0개
+        dp[0][0] = 0;
+
+        for (int i = 0; i < size; i++) {
+            int smell = perfumes.get(i).smell;
+
+            for (int sum = 0; sum <= K; sum++) {
+                // i + 1번째 향료를 사용하지 않는 경우
+                dp[i + 1][sum] = dp[i][sum];
+
+                // i + 1번째 향료를 하나 더 사용하는 경우
+                if (sum >= smell && dp[i + 1][sum - smell] != INF) {
+                    dp[i + 1][sum] = Math.min(
+                        dp[i][sum],        // i번째 향료를 안 씀
+                        dp[i + 1][sum - smell] + 1 // i번째 향료를 또 사용
+                    );
+                }
+            }
+        }
+
+        return dp[size][K] == INF ? -1 : dp[size][K];
     }
 }
