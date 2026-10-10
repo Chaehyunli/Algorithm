@@ -163,15 +163,15 @@ public class Main {
                     }
 
                     // 총 피해량, 사격 선박 수, 사격한 선박 번호(공격력 내림차순, 동률 시 선박 번호 오름차순으로 출력)
-                    attackList.sort((a, b) ->{
-                        // 공격력 동률 시 선박 번호 오름차순
-                        if(a[1] == b[1]){
-                            return a[0] - b[0];
-                        }
+                    // attackList.sort((a, b) ->{
+                    //     // 공격력 동률 시 선박 번호 오름차순
+                    //     if(a[1] == b[1]){
+                    //         return a[0] - b[0];
+                    //     }
 
-                        // 공격력 내림차순
-                        return b[1] - a[1];
-                    });
+                    //     // 공격력 내림차순
+                    //     return b[1] - a[1];
+                    // });
 
                     // 총 피해량
                     System.out.print(totalPower + " ");
