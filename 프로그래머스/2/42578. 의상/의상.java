@@ -7,15 +7,15 @@ class Solution {
         
         for(String[] cloth : clothes){
             String type = cloth[1];
-            String name = cloth[0];
+            // String name = cloth[0];
             
             map.put(type, map.getOrDefault(type, 0) + 1);
         }
         
         int answer = 1;
         
-        for(String key : map.keySet()){
-            answer *= (map.get(key) + 1);
+        for(int value : map.values()){
+            answer *= (value + 1);
         }
         return answer - 1;
     }
