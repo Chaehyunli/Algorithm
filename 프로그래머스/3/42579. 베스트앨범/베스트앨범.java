@@ -3,7 +3,7 @@ import java.util.*;
 class Solution {
     
     // Music class
-    static class Music implements Comparable<Music>{
+    static class Music{
         int id;
         int play;
         
@@ -12,16 +12,6 @@ class Solution {
             this.play = play;
         }
             
-        @Override
-        public int compareTo(Music o){
-            // 재생 횟수가 같으면 id 기준 오름차순
-            if(this.play == o.play){
-                return Integer.compare(this.id, o.id); // id 비교
-            }
-                
-            // 재생 횟수가 다르면 play 기준 내림차순
-            return Integer.compare(o.play, this.play); // play 비교
-        }
     }
     
     public int[] solution(String[] genres, int[] plays) {
@@ -48,20 +38,35 @@ class Solution {
         List<String> sortedGenres = new ArrayList<>(genrePlayMap.keySet());
         sortedGenres.sort((g1, g2) -> Integer.compare(genrePlayMap.get(g2), genrePlayMap.get(g1)));
         
-        List<Integer> result = new ArrayList<>();
+        List<Integer> listResult = new ArrayList<>();
         
         for (String genre : sortedGenres) {
             List<Music> musics = genreMusicMap.get(genre);
-            Collections.sort(musics);
+            
+            // 한 장르 내에서의 음악 우선순위에 따라 정렬
+            musics.sort((a, b) -> {
+                // 재생 횟수가 같으면 id 기준 오름차순
+                if (a.play == b.play) {
+                    return Integer.compare(a.id, b.id);
+                }
+                // 재생 횟수가 다르면 play 기준 내림차순
+                return Integer.compare(b.play, a.play);
+            });
 
             // 장르당 최대 2개만 선택
-            result.add(musics.get(0).id);
+            listResult.add(musics.get(0).id);
             
             if (musics.size() > 1) {
-                result.add(musics.get(1).id);
+                listResult.add(musics.get(1).id);
             }
         }
         
-        return result.stream().mapToInt(i -> i).toArray();
+        int[] result = new int[listResult.size()];
+        
+        for(int i = 0; i < result.length; i++){
+            result[i] = listResult.get(i);
+        }
+        
+        return result;
     }
 }
