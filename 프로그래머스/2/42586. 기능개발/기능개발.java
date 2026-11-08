@@ -8,7 +8,7 @@ class Solution {
         int[] remainDays = new int[size]; // [7, 3, 9]
         
         for(int i = 0; i < size; i++){
-            int remainDay = (99 - progresses[i] + speeds[i]) / speeds[i];
+            int remainDay = (100 - progresses[i] + speeds[i] - 1) / speeds[i];
             
             remainDays[i] = remainDay;
         }
