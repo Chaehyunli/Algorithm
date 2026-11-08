@@ -54,7 +54,7 @@ class Solution {
             // 현재의 시간이랑 들어온 작업의 시간을 비교해서 우선순위 큐에 넣음
             while(jobIdx < tasks.length && tasks[jobIdx].time <= currentTime){
                 // id, time, duration
-                queue.offer(new Task(jobIdx, tasks[jobIdx].time, tasks[jobIdx].duration));
+                queue.offer(tasks[jobIdx]);
                 jobIdx++;
             }
             
@@ -65,7 +65,7 @@ class Solution {
                 finishedTask++;
                 totalTurnAroundTime += currentTime - current.time;
             }else{
-                // 없으면, 다음 우선순위의 jobIdx 작업 시작 시간까지 currentTime을 이동
+                // 없으면, 다음 작업의 요청 시각까지 시간을 이동
                 currentTime = tasks[jobIdx].time;
             }
             
