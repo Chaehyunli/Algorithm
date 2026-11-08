@@ -28,11 +28,10 @@ class Solution {
                 count++;
             }
             
-            // 마지막 인덱스에서는 그떄의 count를 넣어줌
-            if(i == remainDays.length - 1){
-                listAnswer.add(count);
-            }
         }
+        
+        // 마지막 인덱스에서는 그떄의 count를 넣어줌
+        listAnswer.add(count);
         
         // ArrayList -> int[] 변환
         int[] answer = new int[listAnswer.size()];
