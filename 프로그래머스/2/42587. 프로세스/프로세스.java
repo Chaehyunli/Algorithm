@@ -38,6 +38,7 @@ class Solution {
         while(!queue.isEmpty()){
             Process current = queue.poll();
             
+            // 방금 꺼낸 프로세스가 제일 우선순위가 남은 것들 중에 높은 것인 경우
             if(current.priority == sortedPriorities[targetIdx]){
                 answer++;
                 targetIdx++;
@@ -45,7 +46,7 @@ class Solution {
                 if(current.location == location){
                     return answer;
                 }
-            } else{
+            } else{ // 그렇지 않을 경우, 다시 큐에 넣음
                 queue.offer(current);
             }
         }
