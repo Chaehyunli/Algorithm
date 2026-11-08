@@ -16,8 +16,15 @@ class Solution {
     
     public int solution(int[][] jobs) {
         
-        // 요청 시간 기준으로 정렬
-        Arrays.sort(jobs, (a,b) -> Integer.compare(a[0], b[0]));
+        // jobs 목록 배열
+        Task[] tasks = new Task[jobs.length];
+
+        for (int i = 0; i < jobs.length; i++) {
+            tasks[i] = new Task(i, jobs[i][0], jobs[i][1]);
+        }
+
+        // 요청 시각 오름차순
+        Arrays.sort(tasks, (a, b) -> Integer.compare(a.time, b.time));
         
         // 소요시간이 짧은 것, 요청 시각이 빠른 것, 번호가 작은 것 순
         PriorityQueue<Task> queue = new PriorityQueue<>((a, b) -> {
@@ -45,9 +52,9 @@ class Solution {
         
         while(finishedTask < jobs.length){
             // 현재의 시간이랑 들어온 작업의 시간을 비교해서 우선순위 큐에 넣음
-            while(jobIdx < jobs.length && jobs[jobIdx][0] <= currentTime){
+            while(jobIdx < tasks.length && tasks[jobIdx].time <= currentTime){
                 // id, time, duration
-                queue.offer(new Task(jobIdx, jobs[jobIdx][0], jobs[jobIdx][1]));
+                queue.offer(new Task(jobIdx, tasks[jobIdx].time, tasks[jobIdx].duration));
                 jobIdx++;
             }
             
@@ -59,7 +66,7 @@ class Solution {
                 totalTurnAroundTime += currentTime - current.time;
             }else{
                 // 없으면, 다음 우선순위의 jobIdx 작업 시작 시간까지 currentTime을 이동
-                currentTime = jobs[jobIdx][0];
+                currentTime = tasks[jobIdx].time;
             }
             
         }
