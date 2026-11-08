@@ -2,32 +2,33 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] scoville, int K) {
+        
         PriorityQueue<Integer> queue = new PriorityQueue<>();
         
+        // 모든 스코빌 지수를 우선순위 큐에 넣음
         for(int i = 0; i < scoville.length; i++){
             queue.offer(scoville[i]);
         }
         
-        int count = 0;
+        // 반복해야하는 최소 횟수
+        int answer = 0;
         
         while(queue.peek() < K){
             
-            if (queue.size() < 2) {
+            // 모든 음식의 스코빌 지수를 K 이상으로 만들 수 없으면 -1
+            // 반복문에서 개수가 2개 미만인데, K 보다 작으면 불가능한 케이스임
+            if(queue.size() < 2){
                 return -1;
             }
             
-            // 가장 맵지 않은 음식의 스코빌 지수
             int current1 = queue.poll();
-            // 두 번째로 맵지 않은 음식의 스코빌 지수
             int current2 = queue.poll();
             
-            int mixed = current1 + current2 * 2;
+            queue.offer(current1 + current2 * 2);
             
-            queue.offer(mixed);
-            
-            count++;
+            answer++;
         }
         
-        return count;
+        return answer;
     }
 }
