@@ -15,8 +15,10 @@ class Solution {
         while(truckIdx < truck_weights.length){
             time++;
             
+            // 시간이 지나서, 맨 앞 트럭이 빠저 나감
             currentWeight -= queue.poll();
             
+            // 다음 대기 트럭가 다리에 올라갈 수 있으면
             if(currentWeight + truck_weights[truckIdx] <= weight){
                 queue.offer(truck_weights[truckIdx]);
                 currentWeight += truck_weights[truckIdx];
@@ -26,6 +28,8 @@ class Solution {
             }
         }
         
+        // time은 마지막 트럭이 다리에 올라간 시간임
+        // 마지막 트럭이 다리를 통과하기 위해서 bridge_length만큼 더 시간이 필요
         return time + bridge_length;
     }
 }
