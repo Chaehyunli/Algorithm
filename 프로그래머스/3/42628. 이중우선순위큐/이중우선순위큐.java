@@ -2,65 +2,72 @@ import java.util.*;
 
 class Solution {
     
-    public PriorityQueue<Integer> min_queue = new PriorityQueue<>();
-    public PriorityQueue<Integer> max_queue = new PriorityQueue<>(Collections.reverseOrder());
-    public Map<Integer, Integer> map = new HashMap<>();
-    
-    // 삽입
-    public void insert(int val) {
-        min_queue.offer(val);
-        max_queue.offer(val);
-        map.put(val, map.getOrDefault(val, 0) + 1);
-    }
-    
-    // 최댓값 삭제
-    public void deleteMax() {
-        cleanUp(max_queue);
-        if (!max_queue.isEmpty()) {
-            int max = max_queue.poll();
-            map.put(max, map.get(max) - 1);
-        }
-    }
+    // "D 1" 처리용 우선선위 큐
+    static PriorityQueue<Integer> maxQueue = new PriorityQueue<>((a, b) ->{
+        return Integer.compare(b, a);
+    });
 
-    // 최솟값 삭제
-    public void deleteMin() {
-        cleanUp(min_queue);
-        if (!min_queue.isEmpty()) {
-            int min = min_queue.poll();
-            map.put(min, map.get(min) - 1);
-        }
+    // "D -1" 처리용 우선선위 큐
+    static PriorityQueue<Integer> minQueue = new PriorityQueue<>();
+
+    // 현재 어떤 데이터가 있는지 관리
+    static Map<Integer, Integer> map = new HashMap<>();
+    
+    static void insert(int value){
+        maxQueue.offer(value);
+        minQueue.offer(value);
+        map.put(value, map.getOrDefault(value, 0) + 1);
     }
     
-    // 이미 다른 쪽에서 삭제된 원소 제거(동기화 작업)
-    private void cleanUp(PriorityQueue<Integer> heap) {
-        
-        // map에서 개수가 0이라고 나온 것은 모두 버림
-        while (!heap.isEmpty() && map.getOrDefault(heap.peek(), 0) == 0) {
+    static void clean(PriorityQueue<Integer> heap){
+        while(!heap.isEmpty() && map.getOrDefault(heap.peek(), 0) == 0){
             heap.poll();
         }
     }
     
-    public int getMax() {
-        cleanUp(max_queue);
-        return max_queue.isEmpty() ? 0 : max_queue.peek();
+    static void deleteMin(){
+        
+        clean(minQueue);
+        
+        if (!minQueue.isEmpty()) {
+            int min = minQueue.poll();
+            map.put(min, map.get(min) - 1);
+        }
     }
-
-    public int getMin() {
-        cleanUp(min_queue);
-        return min_queue.isEmpty() ? 0 : min_queue.peek();
+    
+    static void deleteMax(){
+        
+        clean(maxQueue);
+        
+        if (!maxQueue.isEmpty()) {
+            int max = maxQueue.poll();
+            map.put(max, map.get(max) - 1);
+        }
     }
+    
+    static int getMax(){
+        clean(maxQueue);
+        
+        return maxQueue.peek();
+    }
+    
+    static int getMin(){
+        clean(minQueue);
+        
+        return minQueue.peek();
+    }
+    
     
     public int[] solution(String[] operations) {
         
         for(String operation : operations){
-            
-            String[] parts = operation.split(" ");
-            String command = parts[0];
-            int value = Integer.parseInt(parts[1]);
+            String[] temp = operation.split(" ");
+            String command = temp[0];
+            int value = Integer.parseInt(temp[1]);
             
             if(command.equals("I")){
                 insert(value);
-            }else if(command.equals("D")){
+            }else{
                 if(value == 1){
                     deleteMax();
                 }else{
@@ -69,15 +76,16 @@ class Solution {
             }
         }
         
-        int max = getMax();
-        int min = getMin();
+        clean(maxQueue);
+        clean(minQueue);
         
-        cleanUp(min_queue);
-        
-        if(min_queue.isEmpty()){
-            return new int[]{0, 0};
+        if(!maxQueue.isEmpty() && !minQueue.isEmpty()){
+            int max = getMax();
+            int min = getMin();
+            
+            return new int[]{max, min};
         }
         
-        return new int[]{max, min};
+        return new int[]{0, 0};
     }
 }
