@@ -52,7 +52,9 @@ class Solution {
                 while(!queue.isEmpty()){
                     Node current = queue.poll();
             
+                    // 이렇게 neighbor로 인접한 것을 판정하지 않고, computers[current][next] == 1로 주어진 인접행렬을 사용해도 됨
                     for(int c : current.neighbor){
+                        
                         if((c != current.id) && (visited[c] == false)){
                             visited[c] = true;
                             queue.offer(new Node(c, computers[c]));
